@@ -27,31 +27,24 @@
     </div>
 
     <script>
-        // Vérifier si l'utilisateur est le spécial
         const specialEmail = 'abdoumayakinouredine@gmail.com';
         const currentEmail = prompt('Veuillez entrer votre adresse e-mail pour vous connecter :');
 
-        // Afficher le contenu spécial si l'utilisateur est le spécial
         if (currentEmail === specialEmail) {
             document.getElementById('special-user-content').classList.remove('hidden');
         }
 
-        // Fonction pour ajouter une image
         function addImage() {
             const imageUrl = document.getElementById('image-url').value;
             if (imageUrl) {
-                // Stocker l'image dans le localStorage
                 let images = JSON.parse(localStorage.getItem('images')) || [];
                 images.push(imageUrl);
                 localStorage.setItem('images', JSON.stringify(images));
-
-                // Afficher l'image
                 displayImages();
                 document.getElementById('image-url').value = ''; // Réinitialiser le champ
             }
         }
 
-        // Fonction pour afficher les images
         function displayImages() {
             const imagesContainer = document.getElementById('images-container');
             imagesContainer.innerHTML = ''; // Réinitialiser l'affichage
@@ -63,7 +56,6 @@
             });
         }
 
-        // Afficher les images existantes au chargement
         window.onload = () => {
             displayImages();
         };
