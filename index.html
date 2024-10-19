@@ -34,7 +34,7 @@
 
 <div id="navbar">
     <button onclick="showPage('home')">Accueil</button>
-    <button onclick="showPage('upload')">Ajouter un Fichier</button>
+    <button onclick="showPage('upload')" id="uploadButton">Ajouter un Fichier</button>
     <button onclick="showPage('files')">Fichiers Disponibles</button>
     <button onclick="showPage('login')">Connexion</button>
     <button onclick="showPage('messages')">Échanger des Messages</button>
@@ -95,6 +95,9 @@
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
+
+        // Gérer les accès spéciaux
+        document.getElementById('uploadButton').style.display = isSpecialUser ? 'inline' : 'none';
         if (pageId === 'home') {
             document.getElementById('specialContent').style.display = isSpecialUser ? 'block' : 'none';
         }
