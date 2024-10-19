@@ -3,245 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Officiel Niger Game</title>
+    <title>Site Officiel de Niger Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            text-align: center;
-            padding: 20px;
-        }
-        nav {
-            margin: 20px 0;
-        }
-        nav button {
-            margin: 0 10px;
-            padding: 10px;
-            background-color: #2980b9;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .hidden {
-            display: none;
-        }
-        .special-only {
-            display: none; /* Par défaut, caché */
-        }
-        .image-display {
-            margin-top: 20px;
-        }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; }
+        img { max-width: 100%; height: auto; }
+        .hidden { display: none; }
+        .container { margin: 20px; }
+        button { margin-top: 10px; }
     </style>
 </head>
 <body>
-
-<!-- Page de connexion -->
-<div id="login" class="page">
-    <h2>Connexion</h2>
-    <input type="text" id="email" placeholder="Entrez votre adresse email">
-    <button onclick="login()">Se connecter</button>
-    <p id="login-error" style="color: red;"></p>
-</div>
-
-<!-- Contenu principal -->
-<div id="main-content" class="hidden">
-    <nav>
-        <button onclick="showPage('home')">Accueil</button>
-        <button id="addFileButton" class="special-only" onclick="showPage('addFile')">Ajouter Fichier</button>
-        <button onclick="showPage('availableFiles')">Fichiers Disponibles</button>
-        <button onclick="showPage('messages')">Messages</button>
-    </nav>
-
-    <!-- Page d'accueil -->
-    <div id="home" class="page hidden">
+    <div class="container">
         <h1>Bienvenue dans le site Officiel de Niger Game</h1>
-
-        <!-- Champ pour l'utilisateur spécial -->
-        <div class="special-only" id="special-content">
-            <h2>Ajouter une image à la page d'accueil :</h2>
-            <input type="text" id="image-url" placeholder="Entrez le lien de l'image">
-            <button onclick="addImage()">Ajouter Image</button>
+        
+        <div id="special-user-content" class="hidden">
+            <h2>Ajouter une image (spécial)</h2>
+            <input type="text" id="image-url" placeholder="Entrez l'URL de l'image">
+            <button onclick="addImage()">Ajouter l'image</button>
         </div>
 
-        <!-- Zone pour afficher l'image ajoutée -->
-        <div class="image-display" id="image-display"></div>
+        <h2>Images publiées</h2>
+        <div id="images-container"></div>
+        
+        <div id="files-container">
+            <h2>Fichiers disponibles</h2>
+            <table id="files-table">
+                <thead>
+                    <tr>
+                        <th>Nom du fichier</th>
+                        <th>Version</th>
+                        <th>Auteur</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Les fichiers téléchargés seront affichés ici -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Page d'ajout de fichier -->
-    <div id="addFile" class="page hidden">
-        <h2>Ajouter un Fichier</h2>
-        <input type="text" id="fileName" placeholder="Nom du Fichier">
-        <input type="text" id="fileVersion" placeholder="Version du Fichier">
-        <input type="text" id="fileAuthor" placeholder="Nom de l'Auteur">
-        <input type="text" id="fileImageUrl" placeholder="URL de l'Image">
-        <input type="text" id="fileDownloadLink" placeholder="Lien de Téléchargement">
-        <input type="checkbox" id="canDownload"> Le fichier peut être téléchargé
-        <button onclick="addFile()">Ajouter Fichier</button>
-    </div>
+    <script>
+        // Vérifier si l'utilisateur est le spécial
+        const specialEmail = 'abdoumayakinouredine@gmail.com';
+        const currentEmail = prompt('Veuillez entrer votre adresse e-mail pour vous connecter :');
 
-    <!-- Page des fichiers disponibles -->
-    <div id="availableFiles" class="page hidden">
-        <h2>Fichiers Disponibles</h2>
-        <div id="fileList"></div>
-    </div>
-
-    <!-- Page des messages -->
-    <div id="messages" class="page hidden">
-        <h2>Échanger des Messages</h2>
-        <textarea id="messageInput" placeholder="Écrire un message..."></textarea>
-        <button onclick="sendMessage()">Envoyer</button>
-        <div id="messageList"></div>
-    </div>
-</div>
-
-<script>
-    // Supposons que l'email de l'utilisateur spécial soit stocké dans une variable
-    const specialEmail = "abdoumayakinouredine@gmail.com"; // Changez ici si besoin
-    let currentUserEmail = ""; // Gérer l'email de l'utilisateur connecté
-
-    // Fonction pour afficher la page sélectionnée
-    function showPage(pageId) {
-        const pages = document.querySelectorAll('.page');
-        pages.forEach(page => {
-            page.classList.add('hidden');
-        });
-        document.getElementById(pageId).classList.remove('hidden');
-    }
-
-    // Fonction de connexion
-    function login() {
-        const emailInput = document.getElementById("email").value;
-        if (emailInput) {
-            currentUserEmail = emailInput;
-            document.getElementById("login").classList.add('hidden');
-            document.getElementById("main-content").classList.remove('hidden');
-            checkSpecialUser(); // Vérifie si l'utilisateur est spécial
-            showPage('home'); // Affiche la page d'accueil
-        } else {
-            document.getElementById("login-error").innerText = "Veuillez entrer une adresse email.";
+        // Afficher le contenu spécial si l'utilisateur est le spécial
+        if (currentEmail === specialEmail) {
+            document.getElementById('special-user-content').classList.remove('hidden');
         }
-    }
 
-    // Fonction pour afficher le contenu spécial si l'utilisateur est spécial
-    function checkSpecialUser() {
-        if (currentUserEmail === specialEmail) {
-            document.getElementById("special-content").style.display = "block"; // Affiche le champ pour ajouter une image
-            document.getElementById("addFileButton").style.display = "inline"; // Affiche le bouton d'ajout de fichier
+        // Fonction pour ajouter une image
+        function addImage() {
+            const imageUrl = document.getElementById('image-url').value;
+            if (imageUrl) {
+                // Stocker l'image dans le localStorage
+                let images = JSON.parse(localStorage.getItem('images')) || [];
+                images.push(imageUrl);
+                localStorage.setItem('images', JSON.stringify(images));
+
+                // Afficher l'image
+                displayImages();
+                document.getElementById('image-url').value = ''; // Réinitialiser le champ
+            }
         }
-    }
 
-    // Liste pour stocker les images
-    let images = [];
-
-    // Fonction pour ajouter une image
-    function addImage() {
-        const imageUrl = document.getElementById("image-url").value;
-        if (imageUrl) {
-            images.push(imageUrl); // Stocke l'image
-            displayImages(); // Affiche les images
-            document.getElementById("image-url").value = ""; // Réinitialise le champ
-        } else {
-            alert("Veuillez entrer un lien d'image valide.");
+        // Fonction pour afficher les images
+        function displayImages() {
+            const imagesContainer = document.getElementById('images-container');
+            imagesContainer.innerHTML = ''; // Réinitialiser l'affichage
+            const images = JSON.parse(localStorage.getItem('images')) || [];
+            images.forEach((image) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = image;
+                imagesContainer.appendChild(imgElement);
+            });
         }
-    }
 
-    // Fonction pour afficher les images
-    function displayImages() {
-        const imageDisplay = document.getElementById("image-display");
-        imageDisplay.innerHTML = ""; // Réinitialise l'affichage
-        images.forEach(imageUrl => {
-            const imgElement = document.createElement("img");
-            imgElement.src = imageUrl;
-            imgElement.style.width = "300px"; // Ajustez la taille si nécessaire
-            imgElement.style.marginTop = "20px";
-            imageDisplay.appendChild(imgElement);
-        });
-    }
-
-    // Liste pour stocker les fichiers
-    let files = [];
-
-    // Fonction pour ajouter un fichier
-    function addFile() {
-        const fileName = document.getElementById("fileName").value;
-        const fileVersion = document.getElementById("fileVersion").value;
-        const fileAuthor = document.getElementById("fileAuthor").value;
-        const fileImageUrl = document.getElementById("fileImageUrl").value;
-        const fileDownloadLink = document.getElementById("fileDownloadLink").value;
-        const canDownload = document.getElementById("canDownload").checked;
-
-        if (fileName && fileVersion && fileAuthor && fileDownloadLink) {
-            const file = { fileName, fileVersion, fileAuthor, fileImageUrl, fileDownloadLink, canDownload };
-            files.push(file);
-            document.getElementById("fileName").value = "";
-            document.getElementById("fileVersion").value = "";
-            document.getElementById("fileAuthor").value = "";
-            document.getElementById("fileImageUrl").value = "";
-            document.getElementById("fileDownloadLink").value = "";
-            document.getElementById("canDownload").checked = false;
+        // Fonction pour ajouter un fichier
+        function addFile(fileName, version, author, imageUrl, fileLink, downloadable) {
+            let files = JSON.parse(localStorage.getItem('files')) || [];
+            const newFile = { fileName, version, author, imageUrl, fileLink, downloadable };
+            files.push(newFile);
+            localStorage.setItem('files', JSON.stringify(files));
             displayFiles();
-        } else {
-            alert("Veuillez remplir tous les champs requis.");
         }
-    }
 
-    // Fonction pour afficher les fichiers
-    function displayFiles() {
-        const fileList = document.getElementById("fileList");
-        fileList.innerHTML = ""; // Réinitialise la liste
-        files.forEach((file, index) => {
-            const fileDiv = document.createElement("div");
-            fileDiv.innerHTML = `
-                <h3>${file.fileName} (Version: ${file.fileVersion})</h3>
-                <p>Auteur: ${file.fileAuthor}</p>
-                <img src="${file.fileImageUrl}" style="width:100px;">
-                <a href="${file.fileDownloadLink}" ${file.canDownload ? '' : 'style="display:none;"'}>Télécharger</a>
-                <button onclick="editFile(${index})">Modifier</button>
-                <button onclick="deleteFile(${index})">Supprimer</button>
-            `;
-            fileList.appendChild(fileDiv);
-        });
-    }
-
-    // Fonction pour modifier un fichier
-    function editFile(index) {
-        const file = files[index];
-        document.getElementById("fileName").value = file.fileName;
-        document.getElementById("fileVersion").value = file.fileVersion;
-        document.getElementById("fileAuthor").value = file.fileAuthor;
-        document.getElementById("fileImageUrl").value = file.fileImageUrl;
-        document.getElementById("fileDownloadLink").value = file.fileDownloadLink;
-        document.getElementById("canDownload").checked = file.canDownload;
-        files.splice(index, 1); // Retire le fichier de la liste
-        displayFiles(); // Met à jour l'affichage
-    }
-
-    // Fonction pour supprimer un fichier
-    function deleteFile(index) {
-        files.splice(index, 1); // Retire le fichier de la liste
-        displayFiles(); // Met à jour l'affichage
-    }
-
-    // Fonction pour envoyer un message
-    function sendMessage() {
-        const messageInput = document.getElementById("messageInput").value;
-        if (messageInput) {
-            const messageList = document.getElementById("messageList");
-            const messageDiv = document.createElement("div");
-            messageDiv.innerText = messageInput;
-            messageList.appendChild(messageDiv);
-            document.getElementById("messageInput").value = ""; // Réinitialise le champ
-        } else {
-            alert("Veuillez entrer un message.");
+        // Fonction pour afficher les fichiers
+        function displayFiles() {
+            const filesTableBody = document.querySelector('#files-table tbody');
+            filesTableBody.innerHTML = ''; // Réinitialiser l'affichage
+            const files = JSON.parse(localStorage.getItem('files')) || [];
+            files.forEach((file, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${file.fileName}</td>
+                    <td>${file.version}</td>
+                    <td>${file.author}</td>
+                    <td><img src="${file.imageUrl}" alt="${file.fileName}" style="width:50px;"></td>
+                    <td>
+                        <a href="${file.fileLink}" download>Télécharger</a>
+                        <button onclick="editFile(${index})">Modifier</button>
+                        <button onclick="deleteFile(${index})">Supprimer</button>
+                    </td>
+                `;
+                filesTableBody.appendChild(row);
+            });
         }
-    }
 
-    // Afficher la page de connexion au chargement de la page
-    window.onload = function() {
-        showPage('login');
-    }
-</script>
+        // Fonction pour modifier un fichier
+        function editFile(index) {
+            // Logique pour modifier le fichier à l'index donné
+        }
 
+        // Fonction pour supprimer un fichier
+        function deleteFile(index) {
+            let files = JSON.parse(localStorage.getItem('files')) || [];
+            files.splice(index, 1);
+            localStorage.setItem('files', JSON.stringify(files));
+            displayFiles();
+        }
+
+        // Afficher les images et fichiers existants au chargement
+        window.onload = () => {
+            displayImages();
+            displayFiles();
+        };
+    </script>
 </body>
 </html>
