@@ -3,62 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Officiel de Niger Game</title>
+    <title>Site Officiel Niger Game</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; }
-        img { max-width: 100%; height: auto; }
-        .hidden { display: none; }
-        .container { margin: 20px; }
-        button { margin-top: 10px; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #282c34;
+            color: white;
+            text-align: center;
+        }
+        #navbar {
+            margin: 20px;
+        }
+        .page {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        textarea {
+            width: 80%;
+            height: 50px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bienvenue dans le site Officiel de Niger Game</h1>
-        
-        <div id="special-user-content" class="hidden">
-            <h2>Ajouter une image (spécial)</h2>
-            <input type="text" id="image-url" placeholder="Entrez l'URL de l'image">
-            <button onclick="addImage()">Ajouter l'image</button>
-        </div>
 
-        <h2>Images publiées</h2>
-        <div id="images-container"></div>
+<div id="navbar">
+    <button onclick="showPage('home')">Accueil</button>
+    <button onclick="showPage('upload')">Ajouter un Fichier</button>
+    <button onclick="showPage('files')">Fichiers Disponibles</button>
+    <button onclick="showPage('login')">Connexion</button>
+    <button onclick="showPage('messages')">Échanger des Messages</button>
+</div>
+
+<div id="content">
+    <!-- Page d'Accueil -->
+    <div id="home" class="page active">
+        <h1>Bienvenue dans le site Officiel de Niger Game</h1>
+        <div id="specialContent" style="display: none;">
+            <h2>Ajouter une Image ou un Lien</h2>
+            <input type="text" id="imageLink" placeholder="Lien de l'image">
+            <button onclick="addImage()">Ajouter Image</button>
+            <div id="images-container"></div>
+        </div>
     </div>
 
-    <script>
-        const specialEmail = 'abdoumayakinouredine@gmail.com';
-        const currentEmail = prompt('Veuillez entrer votre adresse e-mail pour vous connecter :');
+    <!-- Page d'Ajout de Fichier -->
+    <div id="upload" class="page">
+        <h2>Ajouter un Fichier</h2>
+        <input type="text" id="fileName" placeholder="Nom du fichier">
+        <input type="text" id="fileVersion" placeholder="Version du fichier">
+        <input type="text" id="fileAuthor" placeholder="Nom de l'auteur">
+        <input type="text" id="fileImageUrl" placeholder="URL de l'image">
+        <input type="text" id="fileDownloadLink" placeholder="Lien de téléchargement">
+        <label>
+            <input type="checkbox" id="canDownload"> Autoriser le téléchargement
+        </label>
+        <button onclick="addFile()">Ajouter Fichier</button>
+    </div>
 
-        if (currentEmail === specialEmail) {
-            document.getElementById('special-user-content').classList.remove('hidden');
+    <!-- Page de Fichiers Disponibles -->
+    <div id="files" class="page">
+        <h2>Fichiers Disponibles</h2>
+        <div id="filesList"></div>
+    </div>
+
+    <!-- Page de Connexion -->
+    <div id="login" class="page">
+        <h2>Connexion</h2>
+        <input type="email" id="userEmail" placeholder="Adresse Email">
+        <button onclick="login()">Se connecter</button>
+    </div>
+
+    <!-- Page d'Échange de Messages -->
+    <div id="messages" class="page">
+        <h2>Échanger des Messages</h2>
+        <textarea id="messageInput" placeholder="Laissez votre commentaire ici..."></textarea>
+        <button onclick="addMessage()">Envoyer</button>
+        <div id="messageList"></div>
+    </div>
+</div>
+
+<script>
+    const specialEmail = "abdoumayakinouredine@gmail.com";
+    let isSpecialUser = false;
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        if (pageId === 'home') {
+            document.getElementById('specialContent').style.display = isSpecialUser ? 'block' : 'none';
         }
+    }
 
-        function addImage() {
-            const imageUrl = document.getElementById('image-url').value;
-            if (imageUrl) {
-                let images = JSON.parse(localStorage.getItem('images')) || [];
-                images.push(imageUrl);
-                localStorage.setItem('images', JSON.stringify(images));
-                displayImages();
-                document.getElementById('image-url').value = ''; // Réinitialiser le champ
-            }
+    function login() {
+        const email = document.getElementById('userEmail').value;
+        if (email === specialEmail) {
+            isSpecialUser = true;
+            alert("Bienvenue, utilisateur spécial!");
+        } else {
+            alert("Connexion réussie!");
         }
+        showPage('home');
+    }
 
-        function displayImages() {
-            const imagesContainer = document.getElementById('images-container');
-            imagesContainer.innerHTML = ''; // Réinitialiser l'affichage
-            const images = JSON.parse(localStorage.getItem('images')) || [];
-            images.forEach((image) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = image; // Assurez-vous que l'image est une URL valide
-                imagesContainer.appendChild(imgElement);
-            });
+    function addImage() {
+        const link = document.getElementById('imageLink').value;
+        if (link) {
+            const img = document.createElement('img');
+            img.src = link;
+            document.getElementById('images-container').appendChild(img);
+            document.getElementById('imageLink').value = ''; // Clear input
         }
+    }
 
-        window.onload = () => {
-            displayImages();
-        };
-    </script>
+    const files = [];
+    
+    function addFile() {
+        const name = document.getElementById('fileName').value;
+        const version = document.getElementById('fileVersion').value;
+        const author = document.getElementById('fileAuthor').value;
+        const imageUrl = document.getElementById('fileImageUrl').value;
+        const downloadLink = document.getElementById('fileDownloadLink').value;
+        const canDownload = document.getElementById('canDownload').checked;
+
+        if (name && version && author && imageUrl && downloadLink) {
+            files.push({ name, version, author, imageUrl, downloadLink, canDownload });
+            updateFileList();
+            document.getElementById('fileName').value = '';
+            document.getElementById('fileVersion').value = '';
+            document.getElementById('fileAuthor').value = '';
+            document.getElementById('fileImageUrl').value = '';
+            document.getElementById('fileDownloadLink').value = '';
+            document.getElementById('canDownload').checked = false;
+        } else {
+            alert("Veuillez remplir tous les champs.");
+        }
+    }
+
+    function updateFileList() {
+        const filesList = document.getElementById('filesList');
+        filesList.innerHTML = '';
+        files.forEach((file, index) => {
+            filesList.innerHTML += `
+                <div>
+                    <h3>${file.name}</h3>
+                    <img src="${file.imageUrl}" alt="${file.name}" style="max-width: 100px;">
+                    <p>Version: ${file.version} - Auteur: ${file.author}</p>
+                    ${file.canDownload ? `<a href="${file.downloadLink}" target="_blank">Télécharger</a>` : '<span>Non téléchargeable</span>'}
+                    <button onclick="deleteFile(${index})">Supprimer</button>
+                </div>
+            `;
+        });
+    }
+
+    function deleteFile(index) {
+        files.splice(index, 1);
+        updateFileList();
+    }
+
+    const messages = [];
+
+    function addMessage() {
+        const message = document.getElementById('messageInput').value;
+        if (message) {
+            messages.push(message);
+            updateMessageList();
+            document.getElementById('messageInput').value = ''; // Clear input
+        } else {
+            alert("Veuillez entrer un message.");
+        }
+    }
+
+    function updateMessageList() {
+        const messageList = document.getElementById('messageList');
+        messageList.innerHTML = '';
+        messages.forEach(msg => {
+            messageList.innerHTML += `<p>${msg}</p>`;
+        });
+    }
+</script>
+
 </body>
 </html>
